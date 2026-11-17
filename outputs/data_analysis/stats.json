@@ -1,0 +1,46 @@
+{
+  "counts": {
+    "train": {
+      "angry": 3411,
+      "disgust": 317,
+      "fear": 3428,
+      "happy": 6328,
+      "neutral": 4340,
+      "sad": 4209,
+      "surprise": 2214
+    },
+    "val": {
+      "angry": 379,
+      "disgust": 35,
+      "fear": 381,
+      "happy": 703,
+      "neutral": 483,
+      "sad": 468,
+      "surprise": 246
+    },
+    "test": {
+      "angry": 958,
+      "disgust": 111,
+      "fear": 1024,
+      "happy": 1774,
+      "neutral": 1233,
+      "sad": 1247,
+      "surprise": 831
+    }
+  },
+  "totals": {
+    "train": 24247,
+    "val": 2695,
+    "test": 7178
+  },
+  "imbalance_ratio_max_over_min": 19.962145110410095,
+  "pixel_mean": 0.5048534133644569,
+  "pixel_std": 0.25454477713131995,
+  "raw_train_images": 28709,
+  "dedup_removed": {
+    "in_test": 703,
+    "dup_in_train": 1064
+  },
+  "after_dedup_duplicate_groups": 81,
+  "after_dedup_groups_spanning_splits": {}
+}

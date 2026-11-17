@@ -1,0 +1,17 @@
+# Data (download separately, see README)
+data/
+*.zip
+
+# Training artifacts (checkpoints are large; keep metrics/plots if you want them in the repo)
+outputs/**/*.pt
+outputs/**/predictions.csv
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+.DS_Store
+.vscode/
+.idea/
