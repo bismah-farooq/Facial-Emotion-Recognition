@@ -1,6 +1,6 @@
 """Model B - Transfer learning with ResNet-18 (ImageNet-pretrained).
 
-Owner: <PARTNER NAME>
+Owner: Jayden Woodall
 
 Adaptations for 48x48 grayscale FER images:
   * First conv: pretrained RGB 7x7 stride-2 kernel is replaced by a 3x3

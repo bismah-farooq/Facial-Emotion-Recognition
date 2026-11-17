@@ -7,7 +7,7 @@ fine-tuned ImageNet ResNet-18.
 | Model | Owner | Code |
 |---|---|---|
 | **A — Custom CNN** (from scratch, ~4.8M params) | Bismah Farooq | [`src/models/custom_cnn.py`](src/models/custom_cnn.py) |
-| **B — ResNet-18** (ImageNet transfer learning, ~11.2M params) | _Partner name_ | [`src/models/resnet_fer.py`](src/models/resnet_fer.py) |
+| **B — ResNet-18** (ImageNet transfer learning, ~11.2M params) | Jayden Woodall | [`src/models/resnet_fer.py`](src/models/resnet_fer.py) |
 
 Shared code (data pipeline, training loop, evaluation, comparison) is in `src/`. Each person's model
 file and training/evaluation runs are their individual contribution — see [Contributions](#contributions).
@@ -123,7 +123,7 @@ _Fill in after training — `outputs/comparison/summary.md` produces this table.
 
 - **Bismah Farooq** — Model A (`src/models/custom_cnn.py`), its training and evaluation runs; dataset analysis
   and deduplication (`scripts/analyze_data.py`, `src/data.py`).
-- **_Partner name_** — Model B (`src/models/resnet_fer.py`), its fine-tuning schedule, training and evaluation
+- **Jayden Woodall** — Model B (`src/models/resnet_fer.py`), its fine-tuning schedule, training and evaluation
   runs; model comparison (`src/compare.py`).
 
 ## References
