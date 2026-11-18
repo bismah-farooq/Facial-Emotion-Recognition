@@ -116,8 +116,8 @@ _Fill in after training — `outputs/comparison/summary.md` produces this table.
 
 | Model | Test accuracy | Macro-F1 |
 |---|---|---|
-| Custom CNN | | |
-| ResNet-18 | | |
+| Custom CNN |64.1% |0.594 |
+| ResNet-18 |66.1% |0.612 |
 
 ## Contributions
 
