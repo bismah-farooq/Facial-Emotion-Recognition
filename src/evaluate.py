@@ -100,7 +100,7 @@ def main():
     a = p.parse_args()
 
     device = get_device()
-    ckpt = torch.load(os.path.join(a.run, "best.pt"), map_location=device)
+    ckpt = torch.load(os.path.join(a.run, "best.pt"), map_location=device, weights_only=False)
     model = build_model(ckpt["model"], len(CLASSES), pretrained=False).to(device)
     model.load_state_dict(ckpt["state_dict"])
 
