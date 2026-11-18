@@ -1,0 +1,155 @@
+{
+  "model": "resnet18",
+  "best_epoch": 20,
+  "tta": false,
+  "test_accuracy": 0.6609083310114238,
+  "test_macro_f1": 0.6115774316176731,
+  "test_weighted_f1": 0.6614663664327493,
+  "per_class": {
+    "angry": {
+      "precision": 0.5939139559286464,
+      "recall": 0.5908141962421712,
+      "f1-score": 0.5923600209314495,
+      "support": 958.0
+    },
+    "disgust": {
+      "precision": 0.26621160409556316,
+      "recall": 0.7027027027027027,
+      "f1-score": 0.38613861386138615,
+      "support": 111.0
+    },
+    "fear": {
+      "precision": 0.5653298835705045,
+      "recall": 0.4267578125,
+      "f1-score": 0.48636616583194214,
+      "support": 1024.0
+    },
+    "happy": {
+      "precision": 0.8885613207547169,
+      "recall": 0.8494926719278467,
+      "f1-score": 0.8685878962536023,
+      "support": 1774.0
+    },
+    "neutral": {
+      "precision": 0.5969827586206896,
+      "recall": 0.6739659367396593,
+      "f1-score": 0.6331428571428571,
+      "support": 1233.0
+    },
+    "sad": {
+      "precision": 0.5623387790197765,
+      "recall": 0.5244587008821171,
+      "f1-score": 0.5427385892116182,
+      "support": 1247.0
+    },
+    "surprise": {
+      "precision": 0.7389867841409692,
+      "recall": 0.8074608904933814,
+      "f1-score": 0.7717078780908568,
+      "support": 831.0
+    }
+  },
+  "top_confusions": [
+    {
+      "true": "sad",
+      "pred": "neutral",
+      "count": 231,
+      "frac_of_true": 0.185
+    },
+    {
+      "true": "fear",
+      "pred": "sad",
+      "count": 178,
+      "frac_of_true": 0.174
+    },
+    {
+      "true": "neutral",
+      "pred": "sad",
+      "count": 165,
+      "frac_of_true": 0.134
+    },
+    {
+      "true": "sad",
+      "pred": "fear",
+      "count": 130,
+      "frac_of_true": 0.104
+    },
+    {
+      "true": "fear",
+      "pred": "angry",
+      "count": 122,
+      "frac_of_true": 0.119
+    },
+    {
+      "true": "fear",
+      "pred": "neutral",
+      "count": 117,
+      "frac_of_true": 0.114
+    }
+  ],
+  "confusion_matrix": [
+    [
+      566,
+      65,
+      72,
+      27,
+      93,
+      105,
+      30
+    ],
+    [
+      18,
+      78,
+      1,
+      3,
+      3,
+      7,
+      1
+    ],
+    [
+      122,
+      39,
+      437,
+      21,
+      117,
+      178,
+      110
+    ],
+    [
+      41,
+      21,
+      29,
+      1507,
+      85,
+      43,
+      48
+    ],
+    [
+      69,
+      26,
+      51,
+      72,
+      831,
+      165,
+      19
+    ],
+    [
+      111,
+      54,
+      130,
+      38,
+      231,
+      654,
+      29
+    ],
+    [
+      26,
+      10,
+      53,
+      28,
+      32,
+      11,
+      671
+    ]
+  ]
+}
