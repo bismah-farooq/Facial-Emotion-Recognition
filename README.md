@@ -25,6 +25,7 @@ src/
   compare.py         learning curves, per-class F1 chart, markdown results table
 scripts/
   analyze_data.py    class distribution, sample grid, pixel stats, duplicate check
+  webcam_demo.py     live emotion recognition from a webcam or photo
 notebooks/
   colab_train.ipynb  one-click GPU run on Google Colab
 ```
@@ -79,6 +80,18 @@ python -m src.compare --runs outputs/custom_cnn outputs/resnet18
 All runs use `--seed 42`. Useful options: `--epochs`, `--lr`, `--batch-size`, `--no-class-weights`
 (imbalance ablation), `--no-pretrained` (ResNet without ImageNet weights); `src.evaluate --tta`
 (horizontal-flip test-time augmentation). Run `python -m src.train -h` for the full list.
+
+## Live webcam demo
+
+```bash
+python scripts/webcam_demo.py --run outputs/cnn_sqrtw            # press q to quit
+python scripts/webcam_demo.py --run outputs/cnn_sqrtw --image photo.jpg   # single photo -> photo_emotion.jpg
+```
+
+Needs the run's `best.pt` (not in git; download it from Colab into `outputs/cnn_sqrtw/`). Faces are detected
+with OpenCV's Haar cascade, cropped, resized to 48×48 grayscale and normalised like the training data;
+predictions are averaged over the last 5 frames. Expect lower accuracy than on FER-2013 when lighting, pose or
+camera quality differ from the dataset.
 
 ## Method summary
 

@@ -7,3 +7,4 @@ matplotlib
 pillow
 tqdm
 kagglehub
+opencv-python>=4.8,<5   # webcam demo; 5.x no longer ships the Haar face detector
