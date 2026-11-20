@@ -109,21 +109,6 @@ with OpenCV's Haar cascade, cropped, resized to 48×48 grayscale and normalised 
 predictions are averaged over the last 5 frames. Expect lower accuracy than on FER-2013 when lighting, pose or
 camera quality differ from the dataset.
 
-## Exact commands to run the program 
-```bash
-git clone https://github.com/bismah-farooq/Facial-Emotion-Recognition.git
-cd Facial-Emotion-Recognition
-py -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-```
-```bash
-cd Desktop\Facial-Emotion-Recognition
-.venv\Scripts\activate
-python scripts\webcam_demo.py --run outputs/cnn_sqrtw
-```
-
-
 ## Method summary
 
 **Data split.** The official `test/` folder (7,178 images) is the held-out test set and is used only once, for
