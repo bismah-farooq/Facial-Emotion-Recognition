@@ -4,6 +4,9 @@ CECS 456 Machine Learning — Project 2. Classify 48×48 grayscale face images i
 (angry, disgust, fear, happy, neutral, sad, surprise), comparing a CNN trained from scratch with a
 fine-tuned ImageNet ResNet-18.
 
+**▶ Try it live:** **https://bismah-farooq.github.io/Facial-Emotion-Recognition/** — click *Start camera* and the
+best model (68.2% test accuracy) labels your expression in real time, entirely in your browser.
+
 | Model | Owner | Code |
 |---|---|---|
 | **A — Custom CNN** (from scratch, ~4.8M params) | Bismah Farooq | [`src/models/custom_cnn.py`](src/models/custom_cnn.py) |
