@@ -1,0 +1,33 @@
+{
+  "model": "custom_cnn",
+  "data_dir": "data/fer2013",
+  "out_dir": "outputs",
+  "run_name": "cnn_noweights",
+  "epochs": 60,
+  "lr": 0.001,
+  "weight_decay": 0.0001,
+  "batch_size": 64,
+  "val_frac": 0.1,
+  "label_smoothing": 0.1,
+  "no_class_weights": true,
+  "patience": 10,
+  "freeze_epochs": 3,
+  "backbone_lr_mult": 0.1,
+  "no_pretrained": false,
+  "no_dedup": false,
+  "num_workers": 2,
+  "seed": 42,
+  "max_batches": null,
+  "device": "cuda",
+  "n_params": 4819783,
+  "train_counts": {
+    "angry": 3411,
+    "disgust": 317,
+    "fear": 3428,
+    "happy": 6328,
+    "neutral": 4340,
+    "sad": 4209,
+    "surprise": 2214
+  },
+  "class_weights": null
+}

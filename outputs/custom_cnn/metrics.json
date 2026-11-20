@@ -1,0 +1,155 @@
+{
+  "model": "custom_cnn",
+  "best_epoch": 56,
+  "tta": false,
+  "test_accuracy": 0.641404290888827,
+  "test_macro_f1": 0.5943559341064818,
+  "test_weighted_f1": 0.6371971761547368,
+  "per_class": {
+    "angry": {
+      "precision": 0.5558712121212122,
+      "recall": 0.6127348643006263,
+      "f1-score": 0.5829195630585898,
+      "support": 958.0
+    },
+    "disgust": {
+      "precision": 0.308,
+      "recall": 0.6936936936936937,
+      "f1-score": 0.4265927977839335,
+      "support": 111.0
+    },
+    "fear": {
+      "precision": 0.5082706766917293,
+      "recall": 0.330078125,
+      "f1-score": 0.40023682652457077,
+      "support": 1024.0
+    },
+    "happy": {
+      "precision": 0.891500904159132,
+      "recall": 0.8337091319052987,
+      "f1-score": 0.8616370521409845,
+      "support": 1774.0
+    },
+    "neutral": {
+      "precision": 0.5683208701563562,
+      "recall": 0.6780210867802109,
+      "f1-score": 0.6183431952662722,
+      "support": 1233.0
+    },
+    "sad": {
+      "precision": 0.5445362718089991,
+      "recall": 0.4755412991178829,
+      "f1-score": 0.5077054794520548,
+      "support": 1247.0
+    },
+    "surprise": {
+      "precision": 0.7024291497975709,
+      "recall": 0.8351383874849578,
+      "f1-score": 0.7630566245189665,
+      "support": 831.0
+    }
+  },
+  "top_confusions": [
+    {
+      "true": "sad",
+      "pred": "neutral",
+      "count": 274,
+      "frac_of_true": 0.22
+    },
+    {
+      "true": "fear",
+      "pred": "sad",
+      "count": 197,
+      "frac_of_true": 0.192
+    },
+    {
+      "true": "neutral",
+      "pred": "sad",
+      "count": 157,
+      "frac_of_true": 0.127
+    },
+    {
+      "true": "fear",
+      "pred": "surprise",
+      "count": 155,
+      "frac_of_true": 0.151
+    },
+    {
+      "true": "sad",
+      "pred": "angry",
+      "count": 152,
+      "frac_of_true": 0.122
+    },
+    {
+      "true": "fear",
+      "pred": "angry",
+      "count": 147,
+      "frac_of_true": 0.144
+    }
+  ],
+  "confusion_matrix": [
+    [
+      587,
+      62,
+      66,
+      23,
+      110,
+      87,
+      23
+    ],
+    [
+      23,
+      77,
+      3,
+      2,
+      2,
+      2,
+      2
+    ],
+    [
+      147,
+      36,
+      338,
+      25,
+      126,
+      197,
+      155
+    ],
+    [
+      42,
+      12,
+      28,
+      1479,
+      104,
+      43,
+      66
+    ],
+    [
+      82,
+      16,
+      52,
+      67,
+      836,
+      157,
+      23
+    ],
+    [
+      152,
+      43,
+      121,
+      39,
+      274,
+      593,
+      25
+    ],
+    [
+      23,
+      4,
+      57,
+      24,
+      19,
+      10,
+      694
+    ]
+  ]
+}
