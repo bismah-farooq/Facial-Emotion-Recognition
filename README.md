@@ -26,6 +26,10 @@ src/
 scripts/
   analyze_data.py    class distribution, sample grid, pixel stats, duplicate check
   webcam_demo.py     live emotion recognition from a webcam or photo
+  export_onnx.py     export a checkpoint to ONNX for the browser demo
+docs/
+  index.html         browser demo (GitHub Pages)
+  fer_cnn.onnx       exported best Custom CNN
 notebooks/
   colab_train.ipynb  one-click GPU run on Google Colab
 ```
@@ -81,7 +85,16 @@ All runs use `--seed 42`. Useful options: `--epochs`, `--lr`, `--batch-size`, `-
 (imbalance ablation), `--no-pretrained` (ResNet without ImageNet weights); `src.evaluate --tta`
 (horizontal-flip test-time augmentation). Run `python -m src.train -h` for the full list.
 
-## Live webcam demo
+## Live demo in the browser
+
+**https://bismah-farooq.github.io/Facial-Emotion-Recognition/** — open it, click *Start camera*, and the model labels
+your expression live (or upload a photo). Everything runs locally in the browser: MediaPipe finds the face and the
+Custom CNN (`cnn_sqrtw`, exported to [`docs/fer_cnn.onnx`](docs/fer_cnn.onnx)) runs with ONNX Runtime Web, so no
+video is uploaded anywhere. The page is [`docs/index.html`](docs/index.html), served by GitHub Pages from `/docs`.
+Re-export after retraining with `python scripts/export_onnx.py outputs/cnn_sqrtw/best.pt docs/fer_cnn.onnx`
+(needs `pip install onnx onnxruntime`).
+
+## Live webcam demo (local Python)
 
 ```bash
 python scripts/webcam_demo.py --run outputs/cnn_sqrtw            # press q to quit

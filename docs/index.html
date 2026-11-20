@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facial Emotion Recognition — Live Demo</title>
+<meta name="description" content="Real-time facial emotion recognition in your browser. CNN trained on FER-2013. CECS 456, CSULB.">
+<style>
+  :root {
+    --bg: #0f1115; --panel: #171a21; --line: #262b36; --text: #e8eaef; --muted: #9aa1b1; --accent: #7aa2ff;
+    --angry: #ef5350; --disgust: #66bb6a; --fear: #ab47bc; --happy: #ffca28; --neutral: #b0bec5; --sad: #42a5f5; --surprise: #ffa726;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 28px 20px 40px; }
+  h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 22px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  .stage { position: relative; background: #000; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; aspect-ratio: 4 / 3; }
+  #view { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center; text-align: center; padding: 20px; background: rgba(15,17,21,.86); }
+  .overlay.hidden { display: none; }
+  button, .btn { appearance: none; border: 0; border-radius: 10px; padding: 11px 18px; font: 600 15px system-ui, sans-serif; cursor: pointer; background: var(--accent); color: #0b1020; }
+  .btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  button:disabled { opacity: .5; cursor: default; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+  #label { font-size: 28px; font-weight: 700; text-transform: capitalize; }
+  #conf { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .row { display: grid; grid-template-columns: 70px 1fr 42px; gap: 8px; align-items: center; margin: 7px 0; font-size: 14px; }
+  .bar { height: 10px; background: #232733; border-radius: 6px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; width: 0; border-radius: 6px; transition: width .12s linear; }
+  .pct { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  #status { color: var(--muted); font-size: 13px; margin-top: 10px; min-height: 20px; }
+  .note { color: var(--muted); font-size: 13px; margin-top: 18px; }
+  .note a { color: var(--accent); }
+  #crop { width: 96px; height: 96px; image-rendering: pixelated; border-radius: 8px; border: 1px solid var(--line); background: #000; }
+  .cropwrap { display: flex; gap: 12px; align-items: center; margin-top: 14px; font-size: 13px; color: var(--muted); }
+  input[type=file] { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Facial Emotion Recognition</h1>
+  <p class="sub">A CNN trained on FER-2013 recognises 7 emotions from your webcam, live in your browser.</p>
+
+  <div class="grid">
+    <div>
+      <div class="stage">
+        <canvas id="view" width="640" height="480"></canvas>
+        <div class="overlay" id="overlay">
+          <div id="overlayText">Loading model (19 MB)…</div>
+          <button id="startBtn" disabled>Start camera</button>
+          <label class="btn secondary" id="photoBtn" style="display:none">Or try a photo<input type="file" id="photoInput" accept="image/*"></label>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="stopBtn" class="btn secondary" style="display:none">Stop camera</button>
+        <label class="btn secondary" id="photoBtn2">Upload a photo<input type="file" id="photoInput2" accept="image/*"></label>
+      </div>
+      <div id="status"></div>
+    </div>
+
+    <div class="panel">
+      <div class="top"><div id="label">—</div><div id="conf"></div></div>
+      <div id="bars"></div>
+      <div class="cropwrap">
+        <canvas id="crop" width="48" height="48"></canvas>
+        <div>What the model sees:<br>48×48 grayscale face crop</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">
+    Video never leaves your device: face detection (MediaPipe) and the emotion model (ONNX Runtime Web) both run locally in your browser.
+    Model: custom 4-block CNN (4.8M params), square-root class-weighted loss — 68.2% accuracy / 0.653 macro-F1 on the FER-2013 test set.
+    Expect lower accuracy on webcams than on the dataset (lighting, pose, camera quality); happy and surprise are easiest, fear and disgust hardest.
+    <br>CECS 456 Machine Learning, CSULB — Bismah Farooq &amp; Jayden Woodall ·
+    <a href="https://github.com/bismah-farooq/Facial-Emotion-Recognition">Code on GitHub</a>
+  </p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js"></script>
+<script type="module">
+import { FaceDetector, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.2.3/vision_bundle.mjs";
+
+const CLASSES = ["angry", "disgust", "fear", "happy", "neutral", "sad", "surprise"];
+const MEAN = 0.5049, STD = 0.2545, SIZE = 48;   // must match src/data.py
+const SMOOTH = 0.6;                              // exponential smoothing of video predictions
+
+const $ = (id) => document.getElementById(id);
+const view = $("view"), vctx = view.getContext("2d");
+const crop = $("crop"), cctx = crop.getContext("2d", { willReadFrequently: true });
+const css = getComputedStyle(document.documentElement);
+const color = (c) => css.getPropertyValue("--" + c).trim();
+
+// Probability bars
+const bars = {};
+for (const c of CLASSES) {
+  const row = document.createElement("div");
+  row.className = "row";
+  row.innerHTML = `<div style="text-transform:capitalize">${c}</div><div class="bar"><span style="background:${color(c)}"></span></div><div class="pct">0%</div>`;
+  $("bars").appendChild(row);
+  bars[c] = { fill: row.querySelector(".bar > span"), pct: row.querySelector(".pct") };
+}
+function showProbs(p) {
+  const i = p.indexOf(Math.max(...p));
+  $("label").textContent = CLASSES[i];
+  $("label").style.color = color(CLASSES[i]);
+  $("conf").textContent = Math.round(p[i] * 100) + "%";
+  CLASSES.forEach((c, k) => { bars[c].fill.style.width = (p[k] * 100).toFixed(1) + "%"; bars[c].pct.textContent = Math.round(p[k] * 100) + "%"; });
+}
+function clearProbs(msg) {
+  $("label").textContent = msg; $("label").style.color = ""; $("conf").textContent = "";
+  CLASSES.forEach((c) => { bars[c].fill.style.width = "0%"; bars[c].pct.textContent = "0%"; });
+}
+const status = (s) => ($("status").textContent = s);
+
+// Load models
+let session, detector, mode = null;
+ort.env.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/";
+ort.env.wasm.numThreads = 1;
+try {
+  const [sess, fileset] = await Promise.all([
+    ort.InferenceSession.create("fer_cnn.onnx", { executionProviders: ["wasm"] }),
+    FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.2.3/wasm"),
+  ]);
+  session = sess;
+  detector = await FaceDetector.createFromOptions(fileset, {
+    baseOptions: { modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite" },
+    runningMode: "IMAGE", minDetectionConfidence: 0.5,
+  });
+  mode = "IMAGE";
+  $("overlayText").textContent = "Ready. Your camera stays on your device.";
+  $("startBtn").disabled = false;
+  $("photoBtn").style.display = "";
+} catch (e) {
+  console.error(e);
+  $("overlayText").textContent = "Could not load the models: " + e.message;
+}
+
+async function setMode(m) { if (mode !== m) { await detector.setOptions({ runningMode: m }); mode = m; } }
+
+// Square crop around the detected face, enlarged to roughly match FER-2013 framing
+function faceSquare(b, W, H) {
+  const side = Math.max(b.width, b.height) * 1.25;
+  let cx = b.originX + b.width / 2, cy = b.originY + b.height / 2 - 0.08 * b.height;
+  let x = cx - side / 2, y = cy - side / 2;
+  x = Math.max(0, Math.min(x, W - side)); y = Math.max(0, Math.min(y, H - side));
+  return { x, y, side: Math.min(side, W, H) };
+}
+
+async function classify(source, sq) {
+  cctx.imageSmoothingEnabled = true; cctx.imageSmoothingQuality = "high";
+  cctx.drawImage(source, sq.x, sq.y, sq.side, sq.side, 0, 0, SIZE, SIZE);
+  const img = cctx.getImageData(0, 0, SIZE, SIZE).data;
+  const x = new Float32Array(SIZE * SIZE);
+  for (let i = 0; i < SIZE * SIZE; i++) {
+    const g = (0.299 * img[4 * i] + 0.587 * img[4 * i + 1] + 0.114 * img[4 * i + 2]) / 255;
+    x[i] = (g - MEAN) / STD;
+    img[4 * i] = img[4 * i + 1] = img[4 * i + 2] = g * 255;   // show grayscale crop
+  }
+  cctx.putImageData(new ImageData(img, SIZE, SIZE), 0, 0);
+  const out = await session.run({ input: new ort.Tensor("float32", x, [1, 1, SIZE, SIZE]) });
+  const z = Array.from(out.logits.data), m = Math.max(...z), e = z.map((v) => Math.exp(v - m)), s = e.reduce((a, b) => a + b);
+  return e.map((v) => v / s);
+}
+
+function drawBox(sq, p, W, mirror) {
+  const i = p.indexOf(Math.max(...p)), c = color(CLASSES[i]);
+  const x = mirror ? W - sq.x - sq.side : sq.x;
+  vctx.lineWidth = Math.max(2, W / 240); vctx.strokeStyle = c;
+  vctx.strokeRect(x, sq.y, sq.side, sq.side);
+  const txt = `${CLASSES[i]} ${Math.round(p[i] * 100)}%`;
+  vctx.font = `600 ${Math.max(16, W / 28)}px system-ui, sans-serif`;
+  const tw = vctx.measureText(txt).width, th = Math.max(16, W / 28) * 1.4;
+  const ty = sq.y > th ? sq.y - th : sq.y + sq.side;
+  vctx.fillStyle = c; vctx.fillRect(x, ty, tw + 14, th);
+  vctx.fillStyle = "#0b1020"; vctx.fillText(txt, x + 7, ty + th * 0.72);
+}
+
+// Webcam loop
+let stream = null, video = null, running = false, busy = false, smoothed = null, lastTs = -1;
+$("startBtn").onclick = async () => {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+  } catch (e) {
+    $("overlayText").textContent = "Camera access was blocked or unavailable (" + e.name + "). You can still upload a photo.";
+    return;
+  }
+  video = document.createElement("video");
+  video.srcObject = stream; video.playsInline = true; video.muted = true;
+  await video.play();
+  view.width = video.videoWidth; view.height = video.videoHeight;
+  await setMode("VIDEO");
+  $("overlay").classList.add("hidden"); $("stopBtn").style.display = "";
+  smoothed = null; running = true; status("Live — look at the camera and make an expression.");
+  requestAnimationFrame(loop);
+};
+$("stopBtn").onclick = stopCamera;
+function stopCamera() {
+  running = false;
+  if (stream) stream.getTracks().forEach((t) => t.stop());
+  stream = null; $("stopBtn").style.display = "none";
+  $("overlay").classList.remove("hidden"); $("overlayText").textContent = "Camera stopped.";
+  status("");
+}
+
+async function loop() {
+  if (!running) return;
+  const W = view.width, H = view.height;
+  vctx.save(); vctx.translate(W, 0); vctx.scale(-1, 1); vctx.drawImage(video, 0, 0, W, H); vctx.restore();
+  let ts = performance.now(); if (ts <= lastTs) ts = lastTs + 1; lastTs = ts;
+  const faces = detector.detectForVideo(video, ts).detections;
+  if (faces.length) {
+    const best = faces.reduce((a, b) => (a.boundingBox.width > b.boundingBox.width ? a : b));
+    const sq = faceSquare(best.boundingBox, W, H);
+    if (!busy) {
+      busy = true;
+      classify(video, sq).then((p) => {
+        smoothed = smoothed ? smoothed.map((v, k) => SMOOTH * v + (1 - SMOOTH) * p[k]) : p;
+        busy = false;
+      });
+    }
+    if (smoothed) { drawBox(sq, smoothed, W, true); showProbs(smoothed); }
+  } else {
+    smoothed = null; clearProbs("No face");
+  }
+  requestAnimationFrame(loop);
+}
+
+// Photo upload
+async function onPhoto(file) {
+  if (!file || !session) return;
+  if (running) stopCamera();
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+  await img.decode();
+  const W = img.naturalWidth, H = img.naturalHeight;
+  view.width = W; view.height = H;
+  vctx.drawImage(img, 0, 0);
+  $("overlay").classList.add("hidden");
+  await setMode("IMAGE");
+  const faces = detector.detect(img).detections;
+  if (!faces.length) { clearProbs("No face"); status("No face found in that photo — try a clearer, front-facing one."); return; }
+  let last = null;   // smallest first, so the largest face ends up in the panel and crop preview
+  for (const f of faces.sort((a, b) => a.boundingBox.width - b.boundingBox.width)) {
+    const sq = faceSquare(f.boundingBox, W, H);
+    last = await classify(img, sq);
+    drawBox(sq, last, W, false);
+  }
+  showProbs(last);
+  status(faces.length > 1 ? `${faces.length} faces found; panel shows the largest.` : "Photo classified.");
+}
+$("photoInput").onchange = (e) => onPhoto(e.target.files[0]);
+$("photoInput2").onchange = (e) => onPhoto(e.target.files[0]);
+</script>
+</body>
+</html>
