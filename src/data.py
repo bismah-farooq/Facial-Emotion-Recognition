@@ -20,7 +20,6 @@ from collections import Counter
 import numpy as np
 import torch
 from PIL import Image
-from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset, Subset
 from torchvision import datasets, transforms
 
@@ -139,6 +138,8 @@ def load_splits(data_dir: str, val_frac: float = 0.1, seed: int = 42, img_size: 
                   f"{removed.get('dup_in_train', 0)} repeated train images")
     else:
         idx = np.arange(len(full))
+    from sklearn.model_selection import train_test_split  # lazy: keeps the webcam demo light
+
     targets = np.array(full.targets)[idx]
     tr_idx, va_idx = train_test_split(
         idx, test_size=val_frac, stratify=targets, random_state=seed
