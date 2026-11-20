@@ -112,12 +112,16 @@ predictions.
 
 ## Results
 
-_Fill in after training — `outputs/comparison/summary.md` produces this table._
+| Model | Run | Test accuracy | Macro-F1 |
+|---|---|---|---|
+| Custom CNN, inverse-frequency class weights | `outputs/custom_cnn` | 64.1% | 0.594 |
+| Custom CNN, no class weights | `outputs/cnn_noweights` | 67.0% | 0.605 |
+| **Custom CNN, sqrt class weights, 80 epochs** | `outputs/cnn_sqrtw` | **68.2%** | **0.653** |
+| ResNet-18 (fine-tuned) | `outputs/resnet18` | 66.1% | 0.612 |
 
-| Model | Test accuracy | Macro-F1 |
-|---|---|---|
-| Custom CNN |64.1% |0.594 |
-| ResNet-18 |66.1% |0.612 |
+Full per-class table and top confusions: [`outputs/comparison/summary.md`](outputs/comparison/summary.md).
+Reproduce the best Custom CNN run with
+`python -m src.train --model custom_cnn --weight-power 0.5 --epochs 80 --run-name cnn_sqrtw`.
 
 ## Contributions
 
