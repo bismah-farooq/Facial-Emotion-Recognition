@@ -41,7 +41,7 @@ def parse_args():
     p.add_argument("--batch-size", type=int, default=64)
     p.add_argument("--val-frac", type=float, default=0.1)
     p.add_argument("--label-smoothing", type=float, default=0.1)
-    p.add_argument("--no-class-weights", action="store_true", help="plain (unweighted) cross-entropy")
+    p.add_argument("--weight-power", type=float, default=1.0, help="class weight = (inverse freq)^power; 0.5 = sqrt")
     p.add_argument("--patience", type=int, default=10, help="early stopping on val macro-F1")
     p.add_argument("--freeze-epochs", type=int, default=3, help="resnet18 only: epochs with frozen backbone")
     p.add_argument("--backbone-lr-mult", type=float, default=0.1, help="resnet18 only: backbone lr = lr * mult")
@@ -96,8 +96,11 @@ def main():
     counts = class_counts(train_ds)
     print(f"Device: {device} | train {len(train_ds)} | val {len(val_ds)} | test {len(test_ds)}")
     print("Train class counts:", dict(zip(CLASSES, counts)))
-
+    
     weights = None if args.no_class_weights else class_weights(train_ds)
+    if weights is not None and args.weight_power != 1.0:
+        weights = weights ** args.weight_power
+        weights = weights / weights.mean()
     criterion = nn.CrossEntropyLoss(
         weight=weights.to(device) if weights is not None else None,
         label_smoothing=args.label_smoothing,
